@@ -255,4 +255,11 @@ class UploadAction extends Action {
         }
     }
 
+    /**
+     * 
+     * @return UploadedFile
+     */
+    public function getUploadFileInstance() {
+        return $this->_uploadFileInstance;
+    }
 }
