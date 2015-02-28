@@ -152,8 +152,14 @@ class UploadAction extends Action {
             if (true === $this->autoOutput) {
                 $this->processOutput();
             }
-            if ($this->afterSave !== null) {
-                call_user_func($this->afterSave, $this);
+            try {
+                if ($this->afterSave !== null) {
+                    call_user_func($this->afterSave, $this);
+                }
+            } catch (Exception $ex) {
+                //delete file
+                @unlink($this->fullFilename);
+                throw $ex;
             }
         } catch (Exception $e) {
             $this->output['error'] = true;
@@ -254,7 +260,7 @@ class UploadAction extends Action {
             throw new Exception($error);
         }
     }
-    
+
     /**
      * 
      * @return UploadedFile
