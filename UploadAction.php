@@ -28,7 +28,7 @@ class UploadAction extends Action {
     public $uploadBaseUrl = '@web/upload';
 
     /**
-     *  $this->output['fileUrl'] = $this->uploadBaseUrl . '/' . $this->_filename;
+     *  $this->output['fileUrl'] = $this->uploadBaseUrl . '/' . $this->filename;
      * @var bool
      */
     public $autoOutput = true;
@@ -66,21 +66,21 @@ class UploadAction extends Action {
      * file instance
      * @var UploadedFile
      */
-    private $_uploadFileInstance;
+    public $uploadFileInstance;
 
     /**
      * saved format filename
      * image/yyyymmdd/xxx.jpg
      * @var string 
      */
-    private $_filename;
+    public $filename;
 
     /**
      * saved format filename full path
      * /var/www/htdocs/image/yyyymmdd/xxx.jpg
      * @var string
      */
-    private $_fullFilename;
+    public $fullFilename;
 
     /**
      * throw yii\base\Exception will break
@@ -118,7 +118,7 @@ class UploadAction extends Action {
 
     public function init() {
         //upload instance
-        $this->_uploadFileInstance = UploadedFile::getInstanceByName('Filedata');
+        $this->uploadFileInstance = UploadedFile::getInstanceByName('Filedata');
 
         //upload base path
         if (empty($this->uploadBasePath)) {
@@ -134,7 +134,7 @@ class UploadAction extends Action {
 
     public function run() {
         try {
-            if ($this->_uploadFileInstance === null) {
+            if ($this->uploadFileInstance === null) {
                 throw new Exception('upload not exist');
             }
             if ($this->beforeValidate !== null) {
@@ -173,20 +173,20 @@ class UploadAction extends Action {
                 throw new Exception('mkdir fail: ' . $dirPath);
             }
         }
-        $result = $this->_uploadFileInstance->saveAs($fullFilename);
+        $result = $this->uploadFileInstance->saveAs($fullFilename);
         if (!$result) {
             throw new Exception('save file fail');
         }
 
-        $this->_filename = $filename;
-        $this->_fullFilename = $fullFilename;
+        $this->filename = $filename;
+        $this->fullFilename = $fullFilename;
     }
 
     /**
      * output fileUrl
      */
     private function processOutput() {
-        $this->output['fileUrl'] = $this->uploadBaseUrl . '/' . $this->_filename;
+        $this->output['fileUrl'] = $this->uploadBaseUrl . '/' . $this->filename;
     }
 
     /**
@@ -226,7 +226,7 @@ class UploadAction extends Action {
         $format = str_replace("{ss}", $d[6], $format);
         $format = str_replace("{time}", $t, $format);
 
-        $srcName = mb_substr($this->_uploadFileInstance->name, 0, mb_strpos($this->_uploadFileInstance->name, '.'));
+        $srcName = mb_substr($this->uploadFileInstance->name, 0, mb_strpos($this->uploadFileInstance->name, '.'));
         $srcName = preg_replace("/[\|\?\"\<\>\/\*\\\\]+/", '', $srcName);
         $format = str_replace("{filename}", $srcName, $format);
 
@@ -238,7 +238,7 @@ class UploadAction extends Action {
             $format = preg_replace("/\{rand\:[\d]*\}/i", $randNumLength, $format);
         }
 
-        $ext = $this->_uploadFileInstance->getExtension();
+        $ext = $this->uploadFileInstance->getExtension();
         return $format . '.' . $ext;
     }
 
@@ -247,19 +247,20 @@ class UploadAction extends Action {
      * @throws Exception
      */
     private function validate() {
-        $file = $this->_uploadFileInstance;
+        $file = $this->uploadFileInstance;
         $error = [];
         $validator = new FileValidator($this->validateOptions);
         if (!$validator->validate($file, $error)) {
             throw new Exception($error);
         }
     }
-
+    
     /**
      * 
      * @return UploadedFile
      */
     public function getUploadFileInstance() {
-        return $this->_uploadFileInstance;
+        return $this->uploadFileInstance;
     }
+
 }
