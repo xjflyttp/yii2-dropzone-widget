@@ -114,7 +114,7 @@ class UploadAction extends Action {
      * output
      * @var []
      */
-    public $output = ['error' => false];
+    public $output = ['error' => false, 'msg' => 'Success'];
 
     public function init() {
         //upload instance
